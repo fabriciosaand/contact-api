@@ -24,4 +24,5 @@ public class ContactController {
     public List<Contact> getContacts(){
         return contactService.getContacts();
     }
+
 }
