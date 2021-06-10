@@ -1,6 +1,8 @@
 package com.fabriciosaand.contact.service;
 
 import com.fabriciosaand.contact.model.Contact;
+import com.fabriciosaand.contact.repository.ContactRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,9 +10,14 @@ import java.util.List;
 @Service
 public class ContactService {
 
+    private final ContactRepository contactRepository;
+
+    @Autowired
+    public ContactService(ContactRepository contactRepository){
+        this.contactRepository = contactRepository;
+    }
+
     public List<Contact> getContacts(){
-        return java.util.List.of(
-                new com.fabriciosaand.contact.model.Contact(1L,"Fabricio", "Fabricio Andrade", "009900"),
-                new com.fabriciosaand.contact.model.Contact(2L,"João", "João Andrade", "123456"));
+        return contactRepository.findAll();
     }
 }
