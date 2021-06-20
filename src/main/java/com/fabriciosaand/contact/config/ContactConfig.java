@@ -21,9 +21,9 @@ public class ContactConfig {
                     "1234");
             Contact joao = new Contact(
                     2L,
-                    "João",
+                    "João 2",
                     "João Andrade",
-                    "1234");
+                    "1235");
 
             contactRepository.saveAll(List.of(fabricio, joao));
         };

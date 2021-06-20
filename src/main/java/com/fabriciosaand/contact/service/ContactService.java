@@ -1,29 +1,57 @@
 package com.fabriciosaand.contact.service;
 
-import com.fabriciosaand.contact.dto.request.ContactDTO;
+import com.fabriciosaand.contact.exception.BadRequestException;
 import com.fabriciosaand.contact.mapper.ContactMapper;
 import com.fabriciosaand.contact.model.Contact;
 import com.fabriciosaand.contact.repository.ContactRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fabriciosaand.contact.requests.ContactPostRequestBody;
+import com.fabriciosaand.contact.requests.ContactPutRequestBody;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class ContactService {
 
     private final ContactRepository contactRepository;
 
     private static final ContactMapper contactMapper = ContactMapper.INSTANCE;
 
-    public List<Contact> getContacts(){
+    public List<Contact> listAll(){
         return contactRepository.findAll();
     }
 
-    public void addContact(ContactDTO contactDTO) {
-        var contactToSave = contactMapper.contactDTOtoContact(contactDTO);
-        contactRepository.save(contactToSave);
+    public Contact findByIdOrThrowBadRequestException(long id){
+        return contactRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Contact not found"));
+    }
+
+    public Contact save(ContactPostRequestBody contactPostRequestBody) {
+        Contact contact = ContactMapper.INSTANCE.toContact(contactPostRequestBody);
+        var contactOptional = contactRepository.findByName(contact.getName());
+        var contactSameNumber = contactRepository.findByNumber(contact.getNumber());
+        if (contactOptional.isPresent()){
+            throw new IllegalStateException("name already exists");
+        }
+
+        if (contactSameNumber.isPresent()){
+            throw new IllegalStateException("number already exists");
+        }
+
+        return contactRepository.save(contact);
+    }
+
+    public void delete(long id) {
+        contactRepository.delete(findByIdOrThrowBadRequestException(id));
+    }
+
+    public void replace(ContactPutRequestBody contactPutRequestBody) {
+        findByIdOrThrowBadRequestException(contactPutRequestBody.getId());
+        Contact contact = ContactMapper.INSTANCE.toContact(contactPutRequestBody);
+        contactRepository.save(contact);
     }
 }
