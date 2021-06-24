@@ -9,6 +9,7 @@ import com.fabriciosaand.contact.requests.ContactPutRequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class ContactService {
                 .orElseThrow(() -> new BadRequestException("Contact not found"));
     }
 
+    @Transactional
     public Contact save(ContactPostRequestBody contactPostRequestBody) {
         Contact contact = ContactMapper.INSTANCE.toContact(contactPostRequestBody);
         var contactOptional = contactRepository.findByName(contact.getName());
