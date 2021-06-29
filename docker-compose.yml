@@ -9,6 +9,6 @@ services:
       - POSTGRES_PASSWORD=postgres
       - TZ=GMT
     volumes:
-      - "./data/postgres:/var/lib/postgresql/data"
+      - "../data/postgres:/var/lib/postgresql/data"
     ports:
       - 5432:5432
